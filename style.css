@@ -111,34 +111,35 @@ p.rating-text {
   font-weight: bold;
 }
 
+
+
+
+
+
+
+
 .cart-icon {
   font-size: large;
 }
 
-.shake {
-  animation: shakeCart 0.4s ease-in-out forwards;
-}
-@keyframes xAxis {
-  100% {
-    transform: translateX(calc(50vw - 105px));
- }
-}
-@keyframes yAxis {
-  100% {
-    transform: translateY(calc(-50vh + 75px));
- }
-}
-@keyframes shakeCart {
-  25% {
-    transform: translateX(6px);
- }
+/* Define the keyframes for the animation */
+@keyframes add-product {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
   50% {
-    transform: translateX(-4px);
- }
-  75% {
-    transform: translateX(2px);
- }
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+
   100% {
-    transform: translateX(0);
- }
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Apply the animation to the badge element */
+.badge.new-product {
+  animation-name: add-product;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
 }

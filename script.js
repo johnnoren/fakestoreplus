@@ -181,11 +181,17 @@ function showModal(text) {
 
 //  --- Cart ---
 
+function animateCartIcon() {
+    const badge = document.querySelector('#cart-button span.badge');
+    badge.classList.add('new-product');
+    setTimeout(() => cartButton.classList.remove('new-product'),500)
+}
+
 function shakeCart() {
     const cartButton = document.getElementById('cart-button')
 
     cartButton.classList.add('shake');
-      setTimeout(() => { cartButton.classList.remove('shake');},500)
+      
 
 }
 
@@ -197,7 +203,7 @@ function addToCart(product) {
     const cart = Cart.from(localStorage.getItem(CART_STORAGE_KEY))
     cart.addProduct(product)
     saveToLocalStorage(CART_STORAGE_KEY, cart)
-    shakeCart()
+    animateCartIcon()
     // showModal('Product was added to cart!')
 }
 
