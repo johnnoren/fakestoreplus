@@ -1,13 +1,11 @@
 {
-  "name": "fakestoreplus",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "jest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module"
+  "devDependencies": {
+    "@babel/core": "^7.21.3",
+    "@babel/plugin-transform-modules-commonjs": "^7.21.2",
+    "babel-jest": "^29.5.0",
+    "jest-esm-transformer": "^1.0.0"
+  }
 }

@@ -19,8 +19,7 @@ export default class Product {
         this.count = count
     }
 
-    fromJSON(jsonString) {
-        const json = JSON.parse(jsonString)
+    static fromJSON(json) {
         return new Product(json.id, json.title, json.price, json.description, json.category, json.image, json.rating, json.count)
     }
 }
