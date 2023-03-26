@@ -4,7 +4,7 @@ class CartItem {
     product
     quantity
 
-    constructor(product, quantity = 0) {
+    constructor(product, quantity = 1) {
         this.product = product
         this.quantity = quantity
     }
@@ -49,7 +49,9 @@ class Cart {
         }
     }
 
-    #removeCartItems(cartItems) {
+    getQuantityOfItems() { return this.cartItems.reduce((acc, cartItem) => acc + cartItem.quantity, 0) }
+
+    #removeCartItems(itemsToDelete) {
         this.cartItems = this.cartItems.filter((cartItem) => !itemsToDelete.includes(cartItem))
     }
 
@@ -58,7 +60,7 @@ class Cart {
     }
 
     static from(json){
-        return new Cart(json.cartItems)
+        return new Cart(JSON.parse(json)["cartItems"])
     }
 
 }
@@ -169,8 +171,6 @@ const validationPatterns = {
     })
 })();
 
-
-
 // Not used?
 function showModal(text) {
     document.querySelector('.modal-title').innerHTML = text;
@@ -187,22 +187,31 @@ function animateCartIcon() {
     setTimeout(() => badge.classList.remove('new-product'),500)
 }
 
+function setCartIconBadgeCount(count) {
+    document.getElementById('cart-badge-item-counter').innerHTML = count
+}
+
 (function initCart() {
     if (localStorage.getItem(CART_STORAGE_KEY) === null) { saveToLocalStorage(CART_STORAGE_KEY, new Cart()) }
+    setCartIconBadgeCount(getCart().getQuantityOfItems())
 })();
 
+function getCart() {
+    return Cart.from(localStorage.getItem(CART_STORAGE_KEY))
+}
+
 function addToCart(product) {
-    const cart = Cart.from(localStorage.getItem(CART_STORAGE_KEY))
+    const cart = getCart()
     cart.addProduct(product)
     saveToLocalStorage(CART_STORAGE_KEY, cart)
     animateCartIcon()
-    // showModal('Product was added to cart!')
+    setCartIconBadgeCount(cart.getQuantityOfItems())
 }
 
 function removeFromCart(product) {
-    const cart = loadFromLocalStorage(CART_STORAGE_KEY)
+    const cart = getCart()
     cart.removeProduct(product)
     saveToLocalStorage(CART_STORAGE_KEY, cart)
-    // showModal('Product was removed from cart!')
+    setCartIconBadgeCount(cart.getQuantityOfItems())
 }
 
