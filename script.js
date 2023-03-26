@@ -184,15 +184,7 @@ function showModal(text) {
 function animateCartIcon() {
     const badge = document.querySelector('#cart-button span.badge');
     badge.classList.add('new-product');
-    setTimeout(() => cartButton.classList.remove('new-product'),500)
-}
-
-function shakeCart() {
-    const cartButton = document.getElementById('cart-button')
-
-    cartButton.classList.add('shake');
-      
-
+    setTimeout(() => badge.classList.remove('new-product'),500)
 }
 
 (function initCart() {
