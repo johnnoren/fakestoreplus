@@ -1,11 +1,8 @@
 import { CartItem, Product } from '../../main/js/modules/index.js';
 import {jest} from '@jest/globals';
-
 jest.useFakeTimers();
 
-
-// const productData = require('../resources/product/fjallraven_foldsack.json')
-import productData from '../resources/product/fjallraven_foldsack.json';
+import productData from '../resources/product/product_id_1.json';
 const product = Product.fromJSON(productData);
 
 const cartItem = new CartItem(product, 1)

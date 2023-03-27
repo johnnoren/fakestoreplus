@@ -1,51 +1,6 @@
 const CART_STORAGE_KEY = 'fakeStoreCart';
 
-class Cart {
-    cartItems
 
-    constructor(cartItems = []) {
-        this.cartItems = cartItems
-    }
-
-    #containsProduct(product) {
-        // return (this.cartItems === undefined) ? false : this.cartItems.map((cartItem) => cartItem.product).includes(product)
-        return this.cartItems.map((cartItem) => cartItem.product).includes(product)
-    }
-
-    #getCartItem(product) {
-        return this.cartItems.find((cartItem) => cartItem.product === product)
-    }
-
-    addProduct(product) {
-        if (this.#containsProduct(product)) {
-            this.#getCartItem(product).increaseQuantity()
-        } else {
-            this.cartItems.push(new CartItem(product))
-        }
-    }
-
-    removeProduct(product) {
-        if (this.#containsProduct(product)) {
-            this.#getCartItem(product).decreaseQuantity()
-            this.#removeEmptyCartItems()
-        }
-    }
-
-    getQuantityOfItems() { return this.cartItems.reduce((acc, cartItem) => acc + cartItem.quantity, 0) }
-
-    #removeCartItems(itemsToDelete) {
-        this.cartItems = this.cartItems.filter((cartItem) => !itemsToDelete.includes(cartItem))
-    }
-
-    #removeEmptyCartItems() {
-        this.#removeCartItems(this.cartItems.filter((cartItem) => cartItem.quantity === 0))
-    }
-
-    static from(json){
-        return new Cart(JSON.parse(json)["cartItems"])
-    }
-
-}
 
 async function getProductsFromAPI() {
     return (await fetch('https://mocki.io/v1/a99e6cf4-1e5a-4b0e-bc57-6c651f0f09cd')).json();

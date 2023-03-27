@@ -22,5 +22,10 @@ export default class Product {
     static fromJSON(json) {
         return new Product(json.id, json.title, json.price, json.description, json.category, json.image, json.rating, json.count)
     }
+
+    equals(other) {
+        const keys = Object.keys(this);
+        return (keys.length !== Object.keys(other).length) ? false : keys.every(key => this[key] === other[key]);
+        }
 }
 
