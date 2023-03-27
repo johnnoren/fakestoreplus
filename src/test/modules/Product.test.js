@@ -18,3 +18,9 @@ test('Product equality', () => {
     const product2 = newProduct2()
     expect(product1.equals(product2)).toBe(false)
 })
+
+test('Product fromJSON', () => {
+    const product1 = new Product(product1Data.id, product1Data.title, product1Data.price, product1Data.description, product1Data.category, product1Data.image, product1Data.rating, product1Data.count)
+    const product2 = Product.fromJSON(product1Data)
+    expect(product1.equals(product2)).toBe(true)
+})
