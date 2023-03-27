@@ -1,4 +1,4 @@
-import Product from './index.js';
+import {Product} from './index.js';
 
 export default class ProductRepository {
     async getAll() {
