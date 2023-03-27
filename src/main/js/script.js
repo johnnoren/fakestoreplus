@@ -1,11 +1,5 @@
 const CART_STORAGE_KEY = 'fakeStoreCart';
 
-
-
-async function getProductsFromAPI() {
-    return (await fetch('https://mocki.io/v1/a99e6cf4-1e5a-4b0e-bc57-6c651f0f09cd')).json();
-}
-
 const saveToLocalStorage = (name, object) => localStorage.setItem(name, JSON.stringify(object));
 const loadFromLocalStorage = (name) => JSON.parse(localStorage.getItem(name));
 
