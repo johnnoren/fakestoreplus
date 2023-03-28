@@ -1,5 +1,6 @@
+import { FormInputChangeCommand, FormSubmissionCommand } from "./commands/index.js";
 import { CartRepository } from "./models/index.js";
-import { CartIconService } from "./services/index.js";
+import { FormService } from "./services/index.js";
 
 
 const saveToLocalStorage = (name, object) => localStorage.setItem(name, JSON.stringify(object));
@@ -73,16 +74,14 @@ function populateProductTable(products, productTable, showBuyButton = true) {
 
 }
 
+
+
 (function initForms() {
-    const getFormInputs = () => Array.from(document.querySelectorAll('.form-input'));
-    const getInputsAsObject = () => Object.fromEntries(getFormInputs().map((input) => [input.id, input.value]))
     const forms = document.querySelectorAll('.needs-validation');
-    const markInputValidity = (input, isValid) => { input.classList.toggle('is-valid', isValid); input.classList.toggle('is-invalid', !isValid); };
-    const stopFormSubmissionIfInvalid = (form, event) => (form.checkValidity()) ? saveInLocalStorage(form.id, getInputsAsObject()) : event.preventDefault();
-    
+
     Array.from(forms).forEach(form => {
-        form.addEventListener('submit', (event) => { form.classList.add('was-validated'); stopFormSubmissionIfInvalid(form, event); });
-        form.addEventListener('change', (event) => markInputValidity(event.target, event.target.checkValidity()));
+        form.addEventListener('submit', (event) => { new FormSubmissionCommand(form, new FormService(form), event) });
+        form.addEventListener('change', (event) => { new FormInputChangeCommand(event.target, new FormService(form)) });
     })
 })();
 
