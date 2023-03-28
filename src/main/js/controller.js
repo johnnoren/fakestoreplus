@@ -120,18 +120,6 @@ function showModal(text) {
 //  --- Cart ---
 
 
-
-function addToCart(product) {
-    const cartRepository = new CartRepository(CART_STORAGE_KEY)
-    const cart = cartRepository.getCart()
-    cart.addProduct(product)
-    cartRepository.saveCart(cart)
-
-    const cartIconService = new CartIconService()
-    cartIconService.animateCartIcon()
-    cartIconService.setCartIconBadgeCount(cart.getQuantityOfItems())
-}
-
 function removeFromCart(product) {
     const cartRepository = new CartRepository(CART_STORAGE_KEY)
     const cart = cartRepository.getCart()
