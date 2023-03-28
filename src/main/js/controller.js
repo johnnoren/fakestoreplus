@@ -117,18 +117,7 @@ function showModal(text) {
 
 
 
-//  --- Cart ---
 
-
-function removeFromCart(product) {
-    const cartRepository = new CartRepository(CART_STORAGE_KEY)
-    const cart = cartRepository.getCart()
-    cart.removeProduct(product)
-    cartRepository.saveCart(cart)
-
-    const cartIconService = new CartIconService()
-    cartIconService.setCartIconBadgeCount(cart.getQuantityOfItems())
-}
 
 function executeCommand(command) {
     command.execute()
