@@ -1,6 +1,6 @@
 export default class FormService {
 
-    validateForm(form) {
+    formInputsAreValid(form) {
         form.classList.add('was-validated');
         return form.checkValidity();
     }
