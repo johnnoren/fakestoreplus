@@ -144,6 +144,6 @@ function removeFromCart(product) {
     setCartIconBadgeCount(cart.getQuantityOfItems())
 }
 
-function sum(a, b) {
-    return a + b;
+function executeCommand(command) {
+    command.execute()
 }
