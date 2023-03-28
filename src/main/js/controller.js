@@ -1,3 +1,5 @@
+import { CartRepository } from "./models/index.js";
+import { CartIconService } from "./services/index.js";
 
 
 const saveToLocalStorage = (name, object) => localStorage.setItem(name, JSON.stringify(object));
@@ -117,31 +119,27 @@ function showModal(text) {
 
 //  --- Cart ---
 
-function animateCartIcon() {
-    const badge = document.querySelector('#cart-button span.badge');
-    badge.classList.add('new-product');
-    setTimeout(() => badge.classList.remove('new-product'),500)
-}
-
-function setCartIconBadgeCount(count) {
-    document.getElementById('cart-badge-item-counter').innerHTML = count
-}
-
 
 
 function addToCart(product) {
-    const cart = getCart()
+    const cartRepository = new CartRepository(CART_STORAGE_KEY)
+    const cart = cartRepository.getCart()
     cart.addProduct(product)
-    saveToLocalStorage(CART_STORAGE_KEY, cart)
-    animateCartIcon()
-    setCartIconBadgeCount(cart.getQuantityOfItems())
+    cartRepository.saveCart(cart)
+
+    const cartIconService = new CartIconService()
+    cartIconService.animateCartIcon()
+    cartIconService.setCartIconBadgeCount(cart.getQuantityOfItems())
 }
 
 function removeFromCart(product) {
-    const cart = getCart()
+    const cartRepository = new CartRepository(CART_STORAGE_KEY)
+    const cart = cartRepository.getCart()
     cart.removeProduct(product)
-    saveToLocalStorage(CART_STORAGE_KEY, cart)
-    setCartIconBadgeCount(cart.getQuantityOfItems())
+    cartRepository.saveCart(cart)
+
+    const cartIconService = new CartIconService()
+    cartIconService.setCartIconBadgeCount(cart.getQuantityOfItems())
 }
 
 function executeCommand(command) {
