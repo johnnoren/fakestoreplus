@@ -1,7 +1,12 @@
-const CART_STORAGE_KEY = 'fakeStoreCart';
+
 
 const saveToLocalStorage = (name, object) => localStorage.setItem(name, JSON.stringify(object));
 const loadFromLocalStorage = (name) => JSON.parse(localStorage.getItem(name));
+
+
+
+// setCartIconBadgeCount(getCart().getQuantityOfItems()) <- What to do with this? It should be called when the page loads and when the cart changes.
+
 
 function populateCustomerDetailsTable(customerDetails, customerDetailsDiv) {
     Object.keys(customerDetails).forEach((key) => {
@@ -122,14 +127,7 @@ function setCartIconBadgeCount(count) {
     document.getElementById('cart-badge-item-counter').innerHTML = count
 }
 
-(function initCart() {
-    if (localStorage.getItem(CART_STORAGE_KEY) === null) { saveToLocalStorage(CART_STORAGE_KEY, new Cart()) }
-    setCartIconBadgeCount(getCart().getQuantityOfItems())
-})();
 
-function getCart() {
-    return Cart.from(localStorage.getItem(CART_STORAGE_KEY))
-}
 
 function addToCart(product) {
     const cart = getCart()

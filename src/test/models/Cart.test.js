@@ -1,4 +1,4 @@
-import { Cart, CartItem, Product } from '../../main/js/modules/index.js';
+import { Cart, CartItem, Product } from '../../main/js/models/index.js';
 import {jest} from '@jest/globals';
 jest.useFakeTimers();
 

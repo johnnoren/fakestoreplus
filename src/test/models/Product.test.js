@@ -1,4 +1,4 @@
-import {Product } from '../../main/js/modules/index.js';
+import {Product } from '../../main/js/modelss/index.js';
 import {jest} from '@jest/globals';
 jest.useFakeTimers();
 
