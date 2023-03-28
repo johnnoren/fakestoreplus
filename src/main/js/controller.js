@@ -80,8 +80,8 @@ function populateProductTable(products, productTable, showBuyButton = true) {
     const forms = document.querySelectorAll('.needs-validation');
 
     Array.from(forms).forEach(form => {
-        form.addEventListener('submit', (event) => { new FormSubmissionCommand(form, new FormService(form), event) });
-        form.addEventListener('change', (event) => { new FormInputChangeCommand(event.target, new FormService(form)) });
+        form.addEventListener('submit', (event) => { executeCommand(new FormSubmissionCommand(form, new FormService(form), event)) });
+        form.addEventListener('change', (event) => { executeCommand(new FormInputChangeCommand(event.target, new FormService(form))) });
     })
 })();
 
