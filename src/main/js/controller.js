@@ -2,13 +2,34 @@ import { FormInputChangeCommand, FormSubmissionCommand } from "./commands/index.
 import { CartRepository } from "./models/index.js";
 import { FormService } from "./services/index.js";
 
+(function init() {
 
-const saveToLocalStorage = (name, object) => localStorage.setItem(name, JSON.stringify(object));
-const loadFromLocalStorage = (name) => JSON.parse(localStorage.getItem(name));
+    // Forms
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', (event) => { executeCommand(new FormSubmissionCommand(form, new FormService(form), event)) });
+        form.addEventListener('change', (event) => { executeCommand(new FormInputChangeCommand(event.target, new FormService(form))) });
+    })
+
+    // Tables
+    document.querySelectorAll('div').forEach((div) => {
+        switch (div.id) {
+            case 'product-table': getProductsFromAPI().then((products) => populateProductTable(products, div)); break;
+            case 'products-in-cart-table': populateProductTable([JSON.parse(localStorage.getItem('product'))], div, false); break;
+            case 'customer-details': populateCustomerDetailsTable(JSON.parse(localStorage.getItem('customer-details')), div); break;
+        }
+    })
+
+    // Cart icon
+    setCartIconBadgeCount(getCart().getQuantityOfItems())
+
+})();
+
+function executeCommand(command) {
+    command.execute()
+}
 
 
-
-// setCartIconBadgeCount(getCart().getQuantityOfItems()) <- What to do with this? It should be called when the page loads and when the cart changes.
 
 
 function populateCustomerDetailsTable(customerDetails, customerDetailsDiv) {
@@ -25,7 +46,7 @@ function populateCustomerDetailsTable(customerDetails, customerDetailsDiv) {
 
 // remove change so that you get to cart page by clicking the cart button in the header
 function buyProduct(product) {
-    saveToLocalStorage('product', product);
+    localStorage.setItem('product', JSON.stringify(product))
     window.location = 'order.html';
 }
 
@@ -76,26 +97,8 @@ function populateProductTable(products, productTable, showBuyButton = true) {
 
 
 
-(function initForms() {
-    const forms = document.querySelectorAll('.needs-validation');
 
-    Array.from(forms).forEach(form => {
-        form.addEventListener('submit', (event) => { executeCommand(new FormSubmissionCommand(form, new FormService(form), event)) });
-        form.addEventListener('change', (event) => { executeCommand(new FormInputChangeCommand(event.target, new FormService(form))) });
-    })
-})();
 
-(function initTables() {
-    const divs = document.querySelectorAll('div')
-
-    divs.forEach((div) => {
-        switch (div.id) {
-            case 'product-table': getProductsFromAPI().then((products) => populateProductTable(products, div)); break;
-            case 'products-in-cart-table': populateProductTable([loadFromLocalStorage('product')], div, false); break;
-            case 'customer-details': populateCustomerDetailsTable(loadFromLocalStorage('customer-details'), div); break;
-        }
-    })
-})();
 
 // Not used?
 function showModal(text) {
@@ -107,6 +110,3 @@ function showModal(text) {
 
 
 
-function executeCommand(command) {
-    command.execute()
-}
