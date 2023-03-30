@@ -16,9 +16,8 @@ export default class FormService {
     }
 
     saveInputs(form) {
-        const rawFormInputs = Array.from(form.querySelectorAll('.form-input'));
-        const formInputs = Object.fromEntries(formInputs.map((input) => [input.id, input.value]))
-        localStorage.setItem(form.id, JSON.stringify(formInputs));
+        const formValues = Object.fromEntries(new FormData(form).entries());
+        localStorage.setItem(form.id, JSON.stringify(formValues));
     }
 
 }
