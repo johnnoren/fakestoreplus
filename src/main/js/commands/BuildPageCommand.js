@@ -11,27 +11,32 @@ export default class BuildPageCommand {
                 case 'scripts': this.#buildScripts(div);
                 case 'footer': this.#buildFooter(div);
                 case 'customer-details-form': this.#buildCustomerDetailsForm(div);
+                //case 'product-table': getProductsFromAPI().then((products) => populateProductTable(products, div)); break;
+                //case 'products-in-cart-table': populateProductTable([JSON.parse(localStorage.getItem('product'))], div, false); break;
+                //case 'customer-details': populateCustomerDetailsTable(JSON.parse(localStorage.getItem('customer-details')), div); break;
             }
         })
     }
 
-    #getHtmlFromFile = (url) => fetch(url).then((response) => response.text()).then((html) => html);
+    #getHtmlFromFile(url) {
+        fetch(url).then((response) => response.text()).then((html) => html);
+    }
 
     #buildNavbar(div) {
-        div.innerHTML = getHtmlFromFile('navbar.html');
+        div.innerHTML = this.#getHtmlFromFile('navbar.html');
         new CartIconService().setCartIconBadgeCount(new CartRepository().getCart().getQuantityOfItems())
     }
 
     #buildScripts(div) {
-        div.innerHTML = getHtmlFromFile('scripts.html');
+        div.innerHTML = this.#getHtmlFromFile('scripts.html');
     }
 
     #buildFooter(div) {
-        div.innerHTML = getHtmlFromFile('footer.html');
+        div.innerHTML = this.#getHtmlFromFile('footer.html');
     }
 
     #buildCustomerDetailsForm(div) {
-        div.innerHTML = getHtmlFromFile('customer-details-form.html');
+        div.innerHTML = this.#getHtmlFromFile('customer-details-form.html');
     }
 
 }
