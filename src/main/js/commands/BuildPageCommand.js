@@ -1,3 +1,5 @@
+import { TableService } from "../services/index";
+
 export default class BuildPageCommand {
     constructor(cartRepository, cartIconService) {
         this.cartRepository = cartRepository
@@ -7,13 +9,13 @@ export default class BuildPageCommand {
     execute() {
         document.querySelectorAll('needs-build').forEach((div) => {
             switch (div.id) {
-                case 'navbar': this.#buildNavbar(div);
-                case 'scripts': this.#buildScripts(div);
-                case 'footer': this.#buildFooter(div);
-                case 'customer-details-form': this.#buildCustomerDetailsForm(div);
-                //case 'product-table': getProductsFromAPI().then((products) => populateProductTable(products, div)); break;
-                //case 'products-in-cart-table': populateProductTable([JSON.parse(localStorage.getItem('product'))], div, false); break;
-                //case 'customer-details': populateCustomerDetailsTable(JSON.parse(localStorage.getItem('customer-details')), div); break;
+                case 'navbar': this.#buildNavbar(div); break;
+                case 'scripts': this.#buildScripts(div); break;
+                case 'footer': this.#buildFooter(div); break;
+                case 'customer-details-form': this.#buildCustomerDetailsForm(div); break;
+                case 'product-table': this.#buildProductTable(div); break;
+                case 'products-in-cart-table': this.#buildProductsInCartTable(div); break;
+                case 'customer-details': this.#buildCustomerDetailsTable(div); break;
             }
         })
     }
@@ -37,6 +39,18 @@ export default class BuildPageCommand {
 
     #buildCustomerDetailsForm(div) {
         div.innerHTML = this.#getHtmlFromFile('customer-details-form.html');
+    }
+
+    #buildProductTable(div) {
+        new TableService().populateProductTable(JSON.parse(localStorage.getItem('products')), div);
+    }
+
+    #buildProductsInCartTable(div) {
+        new TableService().populateProductTable(JSON.parse(localStorage.getItem('products-in-cart')), div, false);
+    }
+
+    #buildCustomerDetailsTable(div) {
+        new TableService().populateCustomerDetailsTable(JSON.parse(localStorage.getItem('customer-details')), div);
     }
 
 }
