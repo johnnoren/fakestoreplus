@@ -1,15 +1,24 @@
-import { FormInputChangeCommand, FormSubmissionCommand } from "./commands/index.js";
+import { BuildPageCommand, FormInputChangeCommand, FormSubmissionCommand } from "./commands/index.js";
 import { CartRepository } from "./models/index.js";
-import { FormService } from "./services/index.js";
+import { FormService, CartIconService } from "./services/index.js";
 
-(function init() {
+executeCommand(new BuildPageCommand(new CartRepository(), new CartIconService()))
 
-    // Forms
-    const forms = document.querySelectorAll('.needs-validation');
-    Array.from(forms).forEach(form => {
-        form.addEventListener('submit', (event) => { executeCommand(new FormSubmissionCommand(form, new FormService(form), event)) });
-        form.addEventListener('change', (event) => { executeCommand(new FormInputChangeCommand(event.target, new FormService(form))) });
+(function initListeners() {
+    document.querySelectorAll('needs-listener').forEach((div) => {
+        switch (div.id) {
+            case 'customer-details-form': {
+                div.addEventListener('submit', (event) => { executeCommand(new FormSubmissionCommand(form, new FormService(form), event)) });
+                div.addEventListener('change', (event) => { executeCommand(new FormInputChangeCommand(event.target, new FormService(form))) });
+            }
+        }
     })
+})();
+
+
+
+
+
 
     // Tables
     document.querySelectorAll('div').forEach((div) => {
@@ -20,34 +29,30 @@ import { FormService } from "./services/index.js";
         }
     })
 
-    // Cart icon
-    setCartIconBadgeCount(getCart().getQuantityOfItems())
 
-})();
+
+
+
+
+
+
 
 function executeCommand(command) {
     command.execute()
 }
 
-
-
-
 function populateCustomerDetailsTable(customerDetails, customerDetailsDiv) {
-    Object.keys(customerDetails).forEach((key) => {
-        const row = document.querySelector('.customer-details-table-row').cloneNode(true)
-
-        row.querySelector('.customer-details-table-property-name').innerHTML = (key.charAt(0).toUpperCase() + key.slice(1) + ':').replace(/-/g, " ")
-        row.querySelector('.customer-details-table-property-value').innerHTML = customerDetails[key]
-
-        row.classList.remove('d-none')
-        customerDetailsDiv.querySelector('.customer-details-table').appendChild(row)
+    const rowTemplate = customerDetailsDiv.querySelector('tr');
+    
+    Object.entries(customerDetails).forEach(([key, value]) => {
+        const row = rowTemplate.cloneNode(true);
+        
+        row.cells[0].textContent = key.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) + ':';
+        row.cells[1].textContent = value;
+        row.classList.remove('d-none');
+        
+        customerDetailsDiv.firstElementChild.appendChild(row);
     });
-}
-
-// remove change so that you get to cart page by clicking the cart button in the header
-function buyProduct(product) {
-    localStorage.setItem('product', JSON.stringify(product))
-    window.location = 'order.html';
 }
 
 function populateProductTable(products, productTable, showBuyButton = true) {
