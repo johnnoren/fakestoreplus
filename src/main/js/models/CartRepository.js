@@ -9,19 +9,19 @@ export default class CartRepository {
     }
 
     #createCartIfNotExists = () => {
-        if (localStorage.getItem(cartStorageKey) === null) { localStorage.setItem(cartStorageKey, JSON.stringify(new Cart())) }
+        if (localStorage.getItem(this.cartStorageKey) === null) { localStorage.setItem(this.cartStorageKey, JSON.stringify(new Cart())) }
     }
 
     getCart() {
-        this.#createCartIfNotExists(cartStorageKey)
-        return Cart.from(localStorage.getItem(cartStorageKey))
+        this.#createCartIfNotExists()
+        return Cart.from(localStorage.getItem(this.cartStorageKey))
     }
 
     saveCart(cart) {
-        localStorage.setItem(cartStorageKey, JSON.stringify(cart))
+        localStorage.setItem(this.cartStorageKey, JSON.stringify(cart))
     }
 
     deleteCart() {
-        localStorage.removeItem(cartStorageKey)
+        localStorage.removeItem(this.cartStorageKey)
     }
 }
