@@ -1,8 +1,17 @@
-import { BuildPageCommand, FormInputChangeCommand, FormSubmissionCommand } from "./commands/index.js";
-import { CartRepository } from "./models/index.js";
-import { FormService, CartIconService } from "./services/index.js";
+import { BuildPageCommand, FormSubmissionCommand, FormInputChangeCommand } from "./commands.js";
+import { CartRepository, CartIconService } from "./models.js";
+import { FormService, TableService } from "./services.js";
 
-executeCommand(new BuildPageCommand(new CartRepository(), new CartIconService()))
+(function init() {
+    const cartRepository = new CartRepository()
+    const cartIconService = new CartIconService()
+    const tableService = new TableService()
+    const buildPageCommand = new BuildPageCommand(cartRepository, cartIconService, tableService)
+    
+    new Controller().executeCommand(buildPageCommand)
+})();
+
+
 
 (function initListeners() {
     document.querySelectorAll('needs-listener').forEach((div) => {
@@ -15,9 +24,7 @@ executeCommand(new BuildPageCommand(new CartRepository(), new CartIconService())
     })
 })();
 
-function executeCommand(command) {
-    command.execute()
-}
+
 
 // Not used?
 function showModal(text) {
@@ -26,6 +33,10 @@ function showModal(text) {
 }
 
 
-
+class Controller {
+    executeCommand(command) {
+        command.execute()
+    }
+}
 
 

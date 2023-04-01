@@ -1,16 +1,52 @@
-export default class TableService {
-    populateCustomerDetailsTable(customerDetails, customerDetailsDiv) {
-        const rowTemplate = customerDetailsDiv.querySelector('tr');
+export class CartIconService {
 
-        Object.entries(customerDetails).forEach(([key, value]) => {
-            const row = rowTemplate.cloneNode(true);
-            
-            row.cells[0].textContent = key.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) + ':'; // Capitalize first letter and replace dashes with spaces
-            row.cells[1].textContent = value;
-            row.classList.remove('d-none');
-            
-            customerDetailsDiv.firstElementChild.appendChild(row);
-        });
+    constructor(document) {
+        this.document = document
+    }
+
+    animateCartIcon() {
+        const badge = this.document.querySelector('#cart-button span.badge');
+        badge.classList.add('new-product');
+        setTimeout(() => badge.classList.remove('new-product'),500)
+    }
+    
+    setCartIconBadgeCount(count) {
+        this.document.getElementById('cart-badge-item-counter').innerHTML = count
+    }
+
+}
+
+
+export class FormService {
+
+    formInputsAreValid(form) {
+        form.classList.add('was-validated');
+        return form.checkValidity();
+    }
+
+    stopFormSubmission(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    validateInputChange(input) {
+        input.classList.toggle('is-valid', input.checkValidity());
+        input.classList.toggle('is-invalid', !input.checkValidity());
+    }
+
+    saveInputs(form) {
+        const formValues = Object.fromEntries(new FormData(form).entries());
+        localStorage.setItem(form.id, JSON.stringify(formValues));
+    }
+
+}
+
+
+export class TableService {
+    
+    populateCustomerDetailsTable(customerDetails, customerDetailsTable) {
+        const template = document.getElementById('customer-details-table-template').innerHTML;
+        customerDetailsTable.innerHTML = Mustache.render(template, customerDetails);
     }
 
     populateProductTable(products, productTable, showBuyButton = true) {

@@ -6,18 +6,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fake Store</title>
-
 </head>
 
 <body>
 
-    <div class="container needs-build" id="navbar"></div>
+    <div class="container" id="navbar"></div>
 
-    <div class="container needs-build" id="products"></div>
+    <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g4 product-table-row" id="product-table">
+        <div class="col product-col gy-4">
+            <div id="product-cards"></div>
+        </div>
+    </div>
 
-    <div class="container needs-build" id="footer"></div>
+    <div class="container" id="footer"></div>
 
-    <div class="needs-build" id="scripts"></div>
+    <div id="templates"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+        integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
+    <script src="js/controller.js"></script>
 
 </body>
 
