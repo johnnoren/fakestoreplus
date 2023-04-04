@@ -1,21 +1,34 @@
-export class Cart {
-    cartItems
+export class CartItem {
+    constructor(product, quantity = 1) {
+        this.product = product
+        this.quantity = quantity
+    }
 
+    increaseQuantity() {
+        this.quantity += 1
+    }
+
+    decreaseQuantity() {
+        return (this.quantity === 0) ? 0 : this.quantity -= 1
+    }
+}
+
+export class Cart {
     constructor(cartItems = []) {
         this.cartItems = cartItems
     }
 
     #containsProduct(product) {
-        return this.cartItems.map((cartItem) => cartItem.product).some((cartItemProduct) => cartItemProduct.equals(product))
+        return this.cartItems.map((cartItem) => cartItem.product).some((cartItemProduct) => cartItemProduct.id == product.id)
     }
 
     #getCartItem(product) {
-        return this.cartItems.find((cartItem) => cartItem.product.equals(product))
+        return this.cartItems.find((cartItem) => cartItem.product.id == product.id)
     }
 
     addProduct(product) {
         if (this.#containsProduct(product)) {
-            this.#getCartItem(product).increaseQuantity()
+            this.#getCartItem(product).increaseQuantity();
         } else {
             this.cartItems.push(new CartItem(product))
         }
@@ -39,36 +52,16 @@ export class Cart {
     }
 
     static from(json){
-        return new Cart(JSON.parse(json)["cartItems"])
+        const parsedJson = JSON.parse(json);
+        const cartItems = parsedJson.cartItems.map(cartItem => new CartItem(cartItem.product, cartItem.quantity));
+        return new Cart(cartItems);
     }
+    
 
 }
-
-
-export class CartItem {
-    product
-    quantity
-
-    constructor(product, quantity = 1) {
-        this.product = product
-        this.quantity = quantity
-    }
-
-    increaseQuantity() {
-        this.quantity += 1
-    }
-
-    decreaseQuantity() {
-        return (this.quantity === 0) ? 0 : this.quantity -= 1
-    }
-}
-
 
 export class CartRepository {
-
-    cartStorageKey
-
-    constructor(cartStorageKey) {
+    constructor(cartStorageKey = 'defaultCart') {
         this.cartStorageKey = cartStorageKey
     }
 
@@ -90,35 +83,11 @@ export class CartRepository {
     }
 }
 
-
-export class Product {
-    constructor(id, title, price, description, category, image, rating, count) {
-        this.id = id
-        this.title = title
-        this.price = price
-        this.description = description
-        this.category = category
-        this.image = image
-        this.rating = rating
-        this.count = count
-    }
-
-    static fromJSON(json) {
-        return new Product(json.id, json.title, json.price, json.description, json.category, json.image, json.rating, json.count)
-    }
-
-    equals(other) {
-        const keys = Object.keys(this);
-        return (keys.length !== Object.keys(other).length) ? false : keys.every(key => this[key] === other[key]);
-    }
-}
-
-
 export class ProductRepository {
     async getAll() {
         const response = await fetch('https://fakestoreapi.com/products')
         const products = await response.json()
-        return products.map(p => new Product(p.id, p.title, p.price, p.description, p.category, p.image, p.rating.rate, p.rating.count))
+        return products
     }
 
 }

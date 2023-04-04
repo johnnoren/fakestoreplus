@@ -1,5 +1,6 @@
 <script type="x-tmpl-mustache" id="navbar-template">
     <nav class="navbar sticky-top navbar-expand-sm navbar-dark bg-dark">
+        <div class="container">
         <a class="navbar-brand" href="index.html">Fake Store</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
             aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,14 +23,15 @@
             <a href="cart.html" class="btn btn-outline-light position-relative">
                 <i class="bi bi-cart-fill cart-icon"></i><span
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success small"
-                    id="cart-badge-item-counter">{{cart-item-count}}</span>
+                    id="cart-badge-item-counter">{{cartItemCount}}</span>
             </a>
+        </div>
         </div>
     </nav>
 </script>
 
 <script type="x-tmpl-mustache" id="footer-template">
-    <footer class="bg-dark text-muted mt-5">
+    <footer class="footer mt-auto bg-dark text-muted mt-3">
         <div class="p-4 text-center">
             &copy; Fake Store 2023
         </div>
@@ -37,14 +39,14 @@
 </script>
 
 <script type="x-tmpl-mustache" id="product-modal-template">
-    <div class="modal fade" id="" tabindex="-1">
+    <div class="modal fade" id="{{modalId}}" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title product-title" id="exampleModalLabel">{{title}}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title product-title" id="{{modalId}}">{{title}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="{{toggleModal}}"></button>
                 </div>
-                <img src="{{image}}" alt="{{image-alt}}" class="product-table-image p-5">
+                <img src="{{image}}" alt="Image of {{title}}" class="product-table-image p-5">
                 <div class="modal-body description">
                     {{description}}
                 </div>
@@ -52,7 +54,7 @@
                     <div class="row align-items-baseline">
                         <div class="col">
                             <div class="rating">
-                                <div class="rating-upper">
+                                <div class="rating-upper" style="width: {{rating.width}}">
                                     <span>★</span>
                                     <span>★</span>
                                     <span>★</span>
@@ -67,62 +69,64 @@
                                     <span>★</span>
                                 </div>
                             </div>
-                            <p class="rating-text">{{rating-text}}</p>
-    
+                            <p class="rating-text">{{rating.text}}</p>
+
                         </div>
                         <div class="col">
-                            <sub><span class="price">price-whole</span></sub><sup><span class="decimals">{{price-decimals}}</span></sup>
+                            <sub><span class="price">{{price.whole}}</span></sub><sup><span class="decimals">{{price.decimals}}</span></sup>
                         </div>
                         <div class="col">
-                            <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button">ADD TO CART</button>
+                            <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button" onclick="{{buyProduct}}">BUY</button>
                         </div>
                     </div>
                 </div>
-    
+
             </div>
         </div>
     </div>
 </script>
 
 <script type="x-tmpl-mustache" id="product-card-template">
-    <div class="card shadow">
-    
-        <img src="{{image}}" alt="{{image-alt}}" class="product-table-image p-3 card-img-top">
+    <div class="col product-col gy-4">
+        <div class="card shadow">
 
-        <div class="card-body">
-            <div class="card-title product-title text-truncate">{{title}}</div>
-            <div class="card-text">
-                <p class="category">{{category}}</p>
-                <p class="description text-truncate">{{description}}</p>
-            </div>
-        </div>
-        <div class="card-footer">
-            <div class="rating">
-                <div class="rating-upper">
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                </div>
-                <div class="rating-lower">
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                </div>
-            </div>
-            <p class="rating-text">{{rating-text}}</p>
-            <sub><span class="price">{{price-whole}}</span></sub><sup><span class="decimals">{{price-decimals}}</span></sup>
-            <br><br>
-            <div class="d-grid gap-2">
-                <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button">ADD TO
-                    CART</button>
-            </div>
-        </div>
+<img src="{{image}}" alt="Image of {{title}}" class="product-table-image p-3 card-img-top" onclick="{{toggleModal}}">
 
+<div class="card-body" onclick="{{toggleModal}}">
+    <div class="card-title product-title text-truncate">{{title}}</div>
+    <div class="card-text">
+        <p class="category">{{category}}</p>
+        <p class="description text-truncate">{{description}}</p>
     </div>
+</div>
+<div class="card-footer">
+    <div class="rating">
+        <div class="rating-upper" style="width: {{rating.width}}">
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+        </div>
+        <div class="rating-lower">
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+        </div>
+    </div>
+    <p class="rating-text">{{rating.text}}</p>
+    <sub><span class="price">{{price.whole}}</span></sub><sup><span class="decimals">{{price.decimals}}</span></sup>
+    <br><br>
+    <div class="d-grid gap-2">
+        <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button" onclick="{{buyProduct}}">BUY</button>
+    </div>
+</div>
+
+</div>
+</div>
+
 </script>
 
 <script type="x-tmpl-mustache" id="customer-details-table-template">
