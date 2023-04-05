@@ -120,7 +120,7 @@
     <sub><span class="price">{{price.whole}}</span></sub><sup><span class="decimals">{{price.decimals}}</span></sup>
     <br><br>
     <div class="d-grid gap-2">
-        <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button" onclick="{{toggleModal}}">VIEW</button>
+        <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button" onclick="{{addToCart}}">ADD TO CART</button>
     </div>
 </div>
 
@@ -202,7 +202,7 @@
             </li>
           </ul>
           <div class="d-grid gap-2">
-            <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button">CHECKOUT</button>
+            <a href="checkout.html" class="btn btn-dark rounded-pill py-2 btn-block btn-sm">CHECKOUT</a>
           </div>
           <div class="d-grid gap-2 mt-2">
             <button class="btn btn-secondary rounded-pill py-2 btn-block btn-sm" onclick="{{clearCart}}">CLEAR CART</button>
@@ -216,5 +216,103 @@
 <script type="x-tmpl-mustache" id="cart-empty-template">
     <div class="container text-center p-5">
         <h1>Cart is empty.</h1>
+  </div>
+</script>
+
+<script type="x-tmpl-mustache" id="checkout-product-row-template">
+    <tr>
+        <th scope="row" class="border-0">
+          <div class="p-2">
+            <img src="{{product.image}}" alt="" width="70" class="img-fluid rounded shadow-sm">
+            <div class="ml-3 d-inline-block align-middle">
+              <h5 class="mb-0"> <a href="#" class="text-dark d-inline-block align-middle">{{product.title}}</a></h5><span class="text-muted font-weight-normal font-italic d-block">{{product.category}}</span>
+            </div>
+          </div>
+        </th>
+        <td class="border-0 align-middle"><strong>{{product.price.whole}}.{{product.price.decimals}}</strong></td>
+        <td class="border-0 align-middle">
+          <strong>{{quantity}}</strong>
+        </td>
+        <td class="border-0 align-middle"><strong>{{itemTotal}}</strong></td>
+      </tr>
+
+</script>
+
+<script type="x-tmpl-mustache" id="checkout-summary-table-template">
+    <div class="container">
+    <div class="row py-5 p-4 bg-white rounded">
+      <div class="card col-lg-6 mx-auto">
+        <div class="p-4">
+          <ul class="list-unstyled mb-4">
+            <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Order Subtotal
+              </strong><strong>${{cart.total}}</strong></li>
+            <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Shipping and
+                handling</strong><strong>${{shippingCost}}</strong></li>
+            <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Total</strong>
+              <h5 class="font-weight-bold">${{total}}</h5>
+            </li>
+          </ul>
+          <div id="customer-details-form">
+            <div class="col customer-details-cell">
+                <h3><br>Your details</h3><br>
+                <form class="needs-validation" id="customer-details" action="thankyou.html" novalidate>
+                    <div class="row row-cols-2">
+                    <div class="col">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control form-input" name="email" value="" pattern="^(?=.{1,50}$)[^@]+@[^@]+$" required>
+                        <div class="invalid-feedback">
+                            Email must contain @ and be no more than 50 characters.
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control form-input" name="phone" value="" pattern="^(?=.{1,50}$)(\d|-|\(|\))+$" required>
+                        <div class="invalid-feedback">
+                            Phone can only contain digits, dashes and parentheses. It must also be no more than 50
+                            characters.
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label for="full-name" class="form-label">Full name</label>
+                        <input type="text" class="form-control form-input" name="full-name" value="" pattern="^.{2,50}$" required>
+                        <div class="invalid-feedback">
+                            Name must be 2-50 characters.
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label for="street-and-number" class="form-label">Street and number</label>
+                        <input type="text" class="form-control form-input" name="street-and-number" value="" pattern="^.{1,50}$" required>
+                        <div class="invalid-feedback">
+                            Street and number must be 1-50 characters.
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label for="postal-code" class="form-label">Postal code</label>
+                        <input type="text" class="form-control form-input" name="postal-code" pattern="^[0-9]{3} [0-9]{2}$" required>
+                        <div class="invalid-feedback">
+                            Postal code must be digits in this format: 000 00.
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control form-input" name="city" pattern="^.{1,50}$" required>
+                        <div class="invalid-feedback">
+                            City must be 1-50 characters.
+                        </div>
+                    </div>
+                </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-dark rounded-pill py-2 mt-5 btn-block btn-sm add-to-cart-button" type="submit" id="orderButton">SEND ORDER</button>
+                      </div>
+                      <div class="d-grid gap-2 mt-2">
+                        <a href="cart.html" class="btn btn-secondary rounded-pill py-2 btn-block btn-sm">EDIT CART</a>
+                      </div>
+                </form>
+            </div>
+        </div>
+          
+        </div>
+      </div>
+    </div>
   </div>
 </script>

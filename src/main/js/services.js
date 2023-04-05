@@ -55,11 +55,8 @@ export class TableService {
         });
     }
 
-    populateCartProductRows(tbody, cart) {
-        const cartItems = cart.cartItems;
-        const template = document.getElementById('cart-product-row-template').innerHTML;
-
-        cartItems.forEach(cartItem => {
+    populateCartProductRows(tbody, cart, template) {
+        cart.cartItems.forEach(cartItem => {
             this.#adjustProductForDisplay(cartItem.product, true);
             tbody.insertAdjacentHTML('beforeend', Mustache.render(template, cartItem))
         });
@@ -84,18 +81,17 @@ export class TableService {
         return product;
     }
 
-    updateCartProductRows(tbody, cart) { // TODO Maybe merge this with populateCartProductRows
+    updateCartProductRows(tbody, cart, template) { // TODO Maybe merge this with populateCartProductRows
         tbody.innerHTML = "";
-        this.populateCartProductRows(tbody, cart);
+        this.populateCartProductRows(tbody, cart, template);
     }
 
-    updateCartSummaryTable(div, cart) { // TODO Maybe merge this with populateCartSummaryTable
+    updateCartSummaryTable(div, cart, template) { // TODO Maybe merge this with populateCartSummaryTable
         div.innerHTML = "";
-        this.populateCartSummaryTable(div, cart);
+        this.populateCartSummaryTable(div, cart, template);
     }
 
-    populateCartSummaryTable(div, cart) {
-        const template = document.getElementById('cart-summary-table-template').innerHTML;
+    populateCartSummaryTable(div, cart, template) {
         const shippingCost = 10;
         const cartTotal = (parseFloat(cart.total) + shippingCost).toFixed(2);
         const clearCart = "clearCart();";

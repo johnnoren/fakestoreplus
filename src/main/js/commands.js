@@ -32,9 +32,10 @@ export class BuildPageCommand {
                 case 'product-table': this.#buildProductTable(div, tableService, productRepository); break;
                 case 'products-in-cart-table': this.#buildProductsInCartTable(div, tableService); break;
                 case 'customer-details-table': this.#buildCustomerDetailsTable(div, tableService); break;
-                case 'customer-details-form': this.#buildCustomerDetailsForm(div, this.controller, formService); break;
                 case 'cart-product-table': this.#buildCartProductRows(tableService, cartRepository); break;
                 case 'cart-summary-table': this.#buildCartSummaryTable(div, tableService, cartRepository); break;
+                case 'checkout-product-table': this.#buildCheckoutProductRows(tableService, cartRepository); break;
+                case 'checkout-summary-table': this.#buildCheckoutSummaryTable(div, tableService, cartRepository, formService); break;
             }
         })
     }
@@ -72,9 +73,9 @@ export class BuildPageCommand {
     }
 
     #buildCustomerDetailsForm(div, controller, formService) {
-        const form = div.getElementById('form');
-        form.addEventListener('submit', (event) => { controller.executeCommand(new FormSubmissionCommand(form, formService(form), event)) });
-        form.addEventListener('change', (event) => { controller.executeCommand(new FormInputChangeCommand(event.target, formService(form))) });
+        const form = div.getElementsByTagName('form')[0];
+        form.addEventListener('submit', (event) => { controller.executeCommand(new FormSubmissionCommand(form, formService, event)) });
+        form.addEventListener('change', (event) => { controller.executeCommand(new FormInputChangeCommand(event.target, formService)) });
     }
 
     #buildCartProductRows(tableService, cartRepository) {
@@ -85,7 +86,37 @@ export class BuildPageCommand {
         if (cart.isEmpty) {
             div.innerHTML = document.getElementById('cart-empty-template').innerHTML;
         } else {
-            tableService.populateCartProductRows(tbody, cart);
+            const template = document.getElementById('cart-product-row-template').innerHTML;
+            tableService.populateCartProductRows(tbody, cart, template);
+        }
+
+        
+    }
+
+    #buildCheckoutSummaryTable(div, tableService, cartRepository, formService) {
+        const cart = cartRepository.getCart();
+
+        if (cart.isEmpty) {
+            div.innerHTML = '';
+        } else {
+            const template = document.getElementById('checkout-summary-table-template').innerHTML;
+            tableService.populateCartSummaryTable(div, cart, template);
+
+            const div2 = document.getElementById('customer-details-form');
+            this.#buildCustomerDetailsForm(div2, this.controller, formService);
+        }
+    }
+
+    #buildCheckoutProductRows(tableService, cartRepository) {
+        const cart = cartRepository.getCart();
+        const div = document.getElementById('checkout-product-table');
+        const tbody = div.getElementsByTagName('tbody')[0];
+
+        if (cart.isEmpty) {
+          //  div.innerHTML = document.getElementById('checkout-empty-template').innerHTML;
+        } else {
+            const template = document.getElementById('checkout-product-row-template').innerHTML;
+            tableService.populateCartProductRows(tbody, cart, template);
         }
 
         
@@ -97,7 +128,8 @@ export class BuildPageCommand {
         if (cart.isEmpty) {
             div.innerHTML = '';
         } else {
-            tableService.populateCartSummaryTable(div, cart);
+            const template = document.getElementById('cart-summary-table-template').innerHTML;
+            tableService.populateCartSummaryTable(div, cart, template);
         }
     }
 
@@ -122,10 +154,12 @@ export class AddToCartCommand {
 
         if (document.getElementById('cart-product-table') !== null) {
         const tbody = document.getElementById('cart-product-table').getElementsByTagName('tbody')[0]
-        this.tableService.updateCartProductRows(tbody, cart)
+        const template = document.getElementById('cart-product-row-template').innerHTML;
+        this.tableService.updateCartProductRows(tbody, cart, template);
 
-        const div = document.getElementById('cart-summary-table')
-        this.tableService.updateCartSummaryTable(div, cart)
+        const div = document.getElementById('cart-summary-table');
+        const template2 = document.getElementById('cart-summary-table-template').innerHTML;
+        this.tableService.updateCartSummaryTable(div, cart, template2);
         }
     }
 }
@@ -149,10 +183,12 @@ export class RemoveFromCartCommand {
 
         if (document.getElementById('cart-product-table') !== null) {
         const tbody = document.getElementById('cart-product-table').getElementsByTagName('tbody')[0]
-        this.tableService.updateCartProductRows(tbody, cart)
+        const template = document.getElementById('cart-product-row-template').innerHTML;
+        this.tableService.updateCartProductRows(tbody, cart, template);
 
         const div = document.getElementById('cart-summary-table')
-        this.tableService.updateCartSummaryTable(div, cart)
+        const template2 = document.getElementById('cart-summary-table-template').innerHTML;
+        this.tableService.updateCartSummaryTable(div, cart, template2)
         }
     }
 
@@ -166,7 +202,7 @@ export class FormInputChangeCommand {
     }
 
     execute() {
-        formService.validateInput(input)
+        this.formService.validateInputChange(this.input)
     }
 }
 
@@ -179,7 +215,7 @@ export class FormSubmissionCommand {
     }
 
     execute() {
-        (formService.formInputsAreValid(form)) ? formService.saveInputs(form) : formService.stopFormSubmission(event)
+        (this.formService.formInputsAreValid(this.form)) ? this.formService.saveInputs(this.form) : this.formService.stopFormSubmission(this.event)
     }
 }
 
@@ -201,10 +237,12 @@ export class DeleteFromCartCommand {
         this.cartIconService.setBadgeCount(cart.quantityOfItems)
 
         const tbody = document.getElementById('cart-product-table').getElementsByTagName('tbody')[0]
-        this.tableService.updateCartProductRows(tbody, cart)
+        const template = document.getElementById('cart-product-row-template').innerHTML;
+        this.tableService.updateCartProductRows(tbody, cart, template);
 
         const div = document.getElementById('cart-summary-table')
-        this.tableService.updateCartSummaryTable(div, cart)
+        const template2 = document.getElementById('cart-summary-table-template').innerHTML;
+        this.tableService.updateCartSummaryTable(div, cart, template2)
     }
 
 }
@@ -223,4 +261,5 @@ export class ClearCartCommand {
 
         new this.commands.BuildPageCommand(this.commands, this.models, this.services, this.controller).execute();
     }
+
 }
