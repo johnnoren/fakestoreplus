@@ -33,6 +33,8 @@ export class BuildPageCommand {
                 case 'products-in-cart-table': this.#buildProductsInCartTable(div, tableService); break;
                 case 'customer-details-table': this.#buildCustomerDetailsTable(div, tableService); break;
                 case 'customer-details-form': this.#buildCustomerDetailsForm(div, this.controller, formService); break;
+                case 'cart-product-table': this.#buildCartProductRows(tableService, cartRepository); break;
+                case 'cart-summary-table': this.#buildCartSummaryTable(div, tableService, cartRepository); break;
             }
         })
     }
@@ -48,8 +50,8 @@ export class BuildPageCommand {
 
     #buildNavbar(div, cartRepository) {
         const template = document.getElementById('navbar-template').innerHTML;
-        const cartItemCount = cartRepository.getCart().getQuantityOfItems();
-        const render = Mustache.render(template, { cartItemCount: cartItemCount });
+        const cartItemCountAll = cartRepository.getCart().quantityOfItems;
+        const render = Mustache.render(template, { cartItemCountAll: cartItemCountAll });
         div.innerHTML = render;
     }
 
@@ -58,8 +60,7 @@ export class BuildPageCommand {
     }
 
     #buildProductTable(div, tableService, productRepository) {
-        productRepository.getAll().then((products) => { 
-            tableService.populateProductTable(products, div, true) });
+        productRepository.getAll().then((products) => tableService.populateProductTable(products, div, true));
     }
 
     #buildProductsInCartTable(div, tableService) {
@@ -76,24 +77,85 @@ export class BuildPageCommand {
         form.addEventListener('change', (event) => { controller.executeCommand(new FormInputChangeCommand(event.target, formService(form))) });
     }
 
+    #buildCartProductRows(tableService, cartRepository) {
+        const cart = cartRepository.getCart();
+        const div = document.getElementById('cart-product-table');
+        const tbody = div.getElementsByTagName('tbody')[0];
+
+        if (cart.isEmpty) {
+            div.innerHTML = document.getElementById('cart-empty-template').innerHTML;
+        } else {
+            tableService.populateCartProductRows(tbody, cart);
+        }
+
+        
+    }
+
+    #buildCartSummaryTable(div, tableService, cartRepository) {
+        const cart = cartRepository.getCart();
+
+        if (cart.isEmpty) {
+            div.innerHTML = '';
+        } else {
+            tableService.populateCartSummaryTable(div, cart);
+        }
+    }
+
 }
 
 
 export class AddToCartCommand {
-    constructor(product, cartRepository, cartIconService) {
+    constructor(product, cartRepository, cartIconService, tableService) {
         this.product = product
         this.cartRepository = cartRepository
         this.cartIconService = cartIconService
+        this.tableService = tableService
     }
 
-    execute() {
+    execute() { // TODO extract common code
         const cart = this.cartRepository.getCart()
         cart.addProduct(this.product)
         this.cartRepository.saveCart(cart)
 
         this.cartIconService.animateCartIcon()
-        this.cartIconService.setCartIconBadgeCount(cart.getQuantityOfItems())
+        this.cartIconService.setBadgeCount(cart.quantityOfItems)
+
+        if (document.getElementById('cart-product-table') !== null) {
+        const tbody = document.getElementById('cart-product-table').getElementsByTagName('tbody')[0]
+        this.tableService.updateCartProductRows(tbody, cart)
+
+        const div = document.getElementById('cart-summary-table')
+        this.tableService.updateCartSummaryTable(div, cart)
+        }
     }
+}
+
+
+export class RemoveFromCartCommand {
+    constructor(product, cartRepository, cartIconService, tableService) {
+        this.product = product
+        this.cartRepository = cartRepository
+        this.cartIconService = cartIconService
+        this.tableService = tableService
+    }
+
+    execute() { // TODO extract common code
+        const cart = this.cartRepository.getCart()
+        cart.removeProduct(this.product)
+        this.cartRepository.saveCart(cart)
+
+        this.cartIconService.animateCartIcon()
+        this.cartIconService.setBadgeCount(cart.quantityOfItems)
+
+        if (document.getElementById('cart-product-table') !== null) {
+        const tbody = document.getElementById('cart-product-table').getElementsByTagName('tbody')[0]
+        this.tableService.updateCartProductRows(tbody, cart)
+
+        const div = document.getElementById('cart-summary-table')
+        this.tableService.updateCartSummaryTable(div, cart)
+        }
+    }
+
 }
 
 
@@ -122,18 +184,43 @@ export class FormSubmissionCommand {
 }
 
 
-export class RemoveFromCartCommand {
-    constructor(product, cartRepository, cartIconService) {
+export class DeleteFromCartCommand {
+    constructor(product, cartRepository, cartIconService, tableService) {
         this.product = product
         this.cartRepository = cartRepository
         this.cartIconService = cartIconService
+        this.tableService = tableService
+    }
+
+    execute() { // TODO extract common code (to service)
+        const cart = this.cartRepository.getCart()
+        cart.deleteProduct(this.product)
+        this.cartRepository.saveCart(cart)
+
+        this.cartIconService.animateCartIcon()
+        this.cartIconService.setBadgeCount(cart.quantityOfItems)
+
+        const tbody = document.getElementById('cart-product-table').getElementsByTagName('tbody')[0]
+        this.tableService.updateCartProductRows(tbody, cart)
+
+        const div = document.getElementById('cart-summary-table')
+        this.tableService.updateCartSummaryTable(div, cart)
+    }
+
+}
+
+export class ClearCartCommand {
+    constructor(commands, services, models, controller) {
+        this.cartService = new services.CartService(services, models);
+        this.commands = commands;
+        this.services = services;
+        this.models = models;
+        this.controller = controller;
     }
 
     execute() {
-        const cart = cartRepository.getCart()
-        cart.removeProduct(product)
-        cartRepository.saveCart(cart)
+        this.cartService.clearCart();
 
-        cartIconService.setCartIconBadgeCount(cart.getQuantityOfItems())
+        new this.commands.BuildPageCommand(this.commands, this.models, this.services, this.controller).execute();
     }
 }

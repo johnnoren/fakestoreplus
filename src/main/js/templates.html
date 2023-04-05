@@ -23,7 +23,7 @@
             <a href="cart.html" class="btn btn-outline-light position-relative">
                 <i class="bi bi-cart-fill cart-icon"></i><span
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success small"
-                    id="cart-badge-item-counter">{{cartItemCount}}</span>
+                    id="cart-badge-item-counter">{{cartItemCountAll}}</span>
             </a>
         </div>
         </div>
@@ -31,8 +31,8 @@
 </script>
 
 <script type="x-tmpl-mustache" id="footer-template">
-    <footer class="footer mt-auto bg-dark text-muted mt-3">
-        <div class="p-4 text-center">
+    <footer class="footer mt-auto bg-dark text-muted mt-3 fixed-bottom">
+        <div class="p-3 text-center">
             &copy; Fake Store 2023
         </div>
     </footer>
@@ -76,7 +76,7 @@
                             <sub><span class="price">{{price.whole}}</span></sub><sup><span class="decimals">{{price.decimals}}</span></sup>
                         </div>
                         <div class="col">
-                            <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button" onclick="{{buyProduct}}">BUY</button>
+                            <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button" onclick="{{addToCart}}">ADD TO CART</button>
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
     <sub><span class="price">{{price.whole}}</span></sub><sup><span class="decimals">{{price.decimals}}</span></sup>
     <br><br>
     <div class="d-grid gap-2">
-        <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button" onclick="{{buyProduct}}">BUY</button>
+        <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button" onclick="{{toggleModal}}">VIEW</button>
     </div>
 </div>
 
@@ -161,4 +161,60 @@
             </table>
         </div>
     </div>
+</script>
+
+<script type="x-tmpl-mustache" id="cart-product-row-template">
+    <tr>
+        <th scope="row" class="border-0">
+          <div class="p-2">
+            <img src="{{product.image}}" alt="" width="70" class="img-fluid rounded shadow-sm">
+            <div class="ml-3 d-inline-block align-middle">
+              <h5 class="mb-0"> <a href="#" class="text-dark d-inline-block align-middle">{{product.title}}</a></h5><span class="text-muted font-weight-normal font-italic d-block">{{product.category}}</span>
+            </div>
+          </div>
+        </th>
+        <td class="border-0 align-middle"><strong>{{product.price.whole}}.{{product.price.decimals}}</strong></td>
+        <td class="border-0 align-middle">
+          <button class="btn btn-dark btn-circle btn-sm mx-1 add-to-cart-button" onclick="{{product.addToCart}}">+</button>
+          <strong>{{quantity}}</strong>
+          <button class="btn btn-dark btn-circle btn-sm mx-1 remove-from-cart-button" onclick="{{product.removeFromCart}}">-</button>
+        </td>
+        <td class="border-0 align-middle"><strong>{{itemTotal}}</strong></td>
+        <td class="border-0 align-middle">
+          <button type="button" class="btn-close " onclick="{{product.deleteFromCart}}"></button>
+        </td>
+      </tr>
+
+</script>
+
+<script type="x-tmpl-mustache" id="cart-summary-table-template">
+    <div class="container">
+    <div class="row py-5 p-4 bg-white rounded">
+      <div class="card col-lg-6 mx-auto">
+        <div class="p-4">
+          <ul class="list-unstyled mb-4">
+            <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Order Subtotal
+              </strong><strong>${{cart.total}}</strong></li>
+            <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Shipping and
+                handling</strong><strong>${{shippingCost}}</strong></li>
+            <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Total</strong>
+              <h5 class="font-weight-bold">${{total}}</h5>
+            </li>
+          </ul>
+          <div class="d-grid gap-2">
+            <button class="btn btn-dark rounded-pill py-2 btn-block btn-sm add-to-cart-button">CHECKOUT</button>
+          </div>
+          <div class="d-grid gap-2 mt-2">
+            <button class="btn btn-secondary rounded-pill py-2 btn-block btn-sm" onclick="{{clearCart}}">CLEAR CART</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="x-tmpl-mustache" id="cart-empty-template">
+    <div class="container text-center p-5">
+        <h1>Cart is empty.</h1>
+  </div>
 </script>

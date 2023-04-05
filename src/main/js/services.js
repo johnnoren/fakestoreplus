@@ -1,17 +1,13 @@
 export class CartIconService {
 
-    constructor(document) {
-        this.document = document
-    }
-
     animateCartIcon() {
-        const badge = this.document.querySelector('#cart-icon span.badge');
+        const badge = document.querySelector('#cart-icon span.badge');
         badge.classList.add('new-product');
         setTimeout(() => badge.classList.remove('new-product'), 500)
     }
 
-    setCartIconBadgeCount(count) {
-        this.document.getElementById('cart-badge-item-counter').innerHTML = count
+    setBadgeCount(count) {
+        document.getElementById('cart-badge-item-counter').innerHTML = count
     }
 
 }
@@ -59,13 +55,70 @@ export class TableService {
         });
     }
 
-    #adjustProductForDisplay(product) {
+    populateCartProductRows(tbody, cart) {
+        const cartItems = cart.cartItems;
+        const template = document.getElementById('cart-product-row-template').innerHTML;
+
+        cartItems.forEach(cartItem => {
+            this.#adjustProductForDisplay(cartItem.product, true);
+            tbody.insertAdjacentHTML('beforeend', Mustache.render(template, cartItem))
+        });
+    }
+
+    #adjustProductForDisplay(product, forCart = false) {
+        const priceIsString = isNaN(parseFloat(product.price));
+        const productPrice = (priceIsString) ? product.price : parseFloat(product.price);
+
         product.modalId = "modal" + product.id;
         product.rating.width = product.rating.rate / 5 * 100 + "%";
         product.rating.text = product.rating.rate + " stars (" + product.rating.count + " votes)";
-        product.price = { whole: "$" + product.price.toFixed(0), decimals: product.price.toFixed(2).split('.')[1].substring(0, 2) };
+        
+        if (!forCart) {
+            product.price = { whole: "$" + productPrice.toFixed(0), decimals: productPrice.toFixed(2).split('.')[1].substring(0, 2) };
+        }
+        
         product.toggleModal = "$('#" + product.modalId + "').modal('toggle');";
-        product.buyProduct = "addToCart(" + JSON.stringify(product) + ");";
+        product.addToCart = "addToCart(" + JSON.stringify(product) + ");";
+        product.removeFromCart = "removeFromCart(" + JSON.stringify(product) + ");";
+        product.deleteFromCart = "deleteFromCart(" + JSON.stringify(product) + ");";
         return product;
     }
+
+    updateCartProductRows(tbody, cart) { // TODO Maybe merge this with populateCartProductRows
+        tbody.innerHTML = "";
+        this.populateCartProductRows(tbody, cart);
+    }
+
+    updateCartSummaryTable(div, cart) { // TODO Maybe merge this with populateCartSummaryTable
+        div.innerHTML = "";
+        this.populateCartSummaryTable(div, cart);
+    }
+
+    populateCartSummaryTable(div, cart) {
+        const template = document.getElementById('cart-summary-table-template').innerHTML;
+        const shippingCost = 10;
+        const cartTotal = (parseFloat(cart.total) + shippingCost).toFixed(2);
+        const clearCart = "clearCart();";
+
+        div.innerHTML = Mustache.render(template, { cart: cart, shippingCost: shippingCost, total: cartTotal, clearCart: clearCart });
+    }
+
+}
+
+export class CartService {
+        constructor(services, models) {
+            this.cartRepository = new models.CartRepository();
+            this.cartIconService = new services.CartIconService();
+        }
+
+    clearCart() {
+        const cart = this.cartRepository.getCart();
+        cart.clearCart();
+        this.cartRepository.saveCart(cart);
+    }
+
+    getCartItemCount() {
+        return this.cartRepository.getCart().cartItems.length;
+    }
+
 }

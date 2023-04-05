@@ -11,6 +11,13 @@ export class CartItem {
     decreaseQuantity() {
         return (this.quantity === 0) ? 0 : this.quantity -= 1
     }
+
+    get itemTotal() {
+        const priceString = (this.product.price.whole + '.' + this.product.price.decimals).slice(1)
+        const price = parseFloat(priceString)
+        return parseFloat((price * this.quantity).toFixed(2))
+    }
+
 }
 
 export class Cart {
@@ -41,7 +48,28 @@ export class Cart {
         }
     }
 
-    getQuantityOfItems() { return this.cartItems.reduce((acc, cartItem) => acc + cartItem.quantity, 0) }
+    deleteProduct(product) {
+        if (this.#containsProduct(product)) {
+            this.#getCartItem(product).quantity = 0;
+            this.#removeEmptyCartItems()
+        }
+    }
+
+    clearCart() {
+        this.cartItems = [];
+    }
+
+    get quantityOfItems() {
+        return this.cartItems.reduce((acc, cartItem) => acc + cartItem.quantity, 0)
+    }
+
+    get total() {
+        return this.cartItems.reduce((acc, cartItem) => acc + cartItem.itemTotal, 0).toFixed(2)
+    }
+
+    get isEmpty() {
+        return this.cartItems.length === 0
+    }
 
     #removeCartItems(itemsToDelete) {
         this.cartItems = this.cartItems.filter((cartItem) => !itemsToDelete.includes(cartItem))
