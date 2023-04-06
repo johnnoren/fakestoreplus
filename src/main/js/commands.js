@@ -22,6 +22,7 @@ export class BuildPageCommand {
         const tableService = new this.services.TableService();
         const productRepository = new this.models.ProductRepository();
         const formService = new this.services.FormService();
+        const cartService = new this.services.CartService(this.services, this.models);
 
         [...document.getElementsByTagName('div')].forEach((div) => {
 
@@ -35,7 +36,8 @@ export class BuildPageCommand {
                 case 'cart-product-table': this.#buildCartProductRows(tableService, cartRepository); break;
                 case 'cart-summary-table': this.#buildCartSummaryTable(div, tableService, cartRepository); break;
                 case 'checkout-product-table': this.#buildCheckoutProductRows(tableService, cartRepository); break;
-                case 'checkout-summary-table': this.#buildCheckoutSummaryTable(div, tableService, cartRepository, formService); break;
+                case 'checkout-summary-table': this.#buildCheckoutSummaryTable(div, tableService, cartRepository, formService, cartService); break;
+                case 'thank-you-summary-table': this.#buildThankYouSummaryTable(div, tableService, cartRepository, cartService); break;
             }
         })
     }
@@ -72,9 +74,9 @@ export class BuildPageCommand {
         tableService.populateCustomerDetailsTable(JSON.parse(localStorage.getItem('customer-details')), div);
     }
 
-    #buildCustomerDetailsForm(div, controller, formService) {
+    #buildCustomerDetailsForm(div, controller, formService, cartService) {
         const form = div.getElementsByTagName('form')[0];
-        form.addEventListener('submit', (event) => { controller.executeCommand(new FormSubmissionCommand(form, formService, event)) });
+        form.addEventListener('submit', (event) => { controller.executeCommand(new FormSubmissionCommand(form, formService, event, cartService)) });
         form.addEventListener('change', (event) => { controller.executeCommand(new FormInputChangeCommand(event.target, formService)) });
     }
 
@@ -93,7 +95,7 @@ export class BuildPageCommand {
         
     }
 
-    #buildCheckoutSummaryTable(div, tableService, cartRepository, formService) {
+    #buildCheckoutSummaryTable(div, tableService, cartRepository, formService, cartService) {
         const cart = cartRepository.getCart();
 
         if (cart.isEmpty) {
@@ -103,7 +105,7 @@ export class BuildPageCommand {
             tableService.populateCartSummaryTable(div, cart, template);
 
             const div2 = document.getElementById('customer-details-form');
-            this.#buildCustomerDetailsForm(div2, this.controller, formService);
+            this.#buildCustomerDetailsForm(div2, this.controller, formService, cartService);
         }
     }
 
@@ -130,6 +132,18 @@ export class BuildPageCommand {
         } else {
             const template = document.getElementById('cart-summary-table-template').innerHTML;
             tableService.populateCartSummaryTable(div, cart, template);
+        }
+    }
+
+    #buildThankYouSummaryTable(div, tableService, cartRepository, cartService) {
+        const cart = cartRepository.getCart();
+
+        if (cart.isEmpty) {
+            div.innerHTML = '';
+        } else {
+            const template = document.getElementById('thank-you-summary-table-template').innerHTML;
+            tableService.populateCartSummaryTable(div, cart, template);
+            cartService.clearCart();
         }
     }
 
@@ -208,14 +222,19 @@ export class FormInputChangeCommand {
 
 
 export class FormSubmissionCommand {
-    constructor(form, formService, event) {
+    constructor(form, formService, event, cartService) {
         this.form = form
         this.formService = formService
         this.event = event
+        this.cartService = cartService
     }
 
     execute() {
-        (this.formService.formInputsAreValid(this.form)) ? this.formService.saveInputs(this.form) : this.formService.stopFormSubmission(this.event)
+        if (this.formService.formInputsAreValid(this.form)) {
+            this.formService.saveInputs(this.form)
+        } else {
+            this.formService.stopFormSubmission(this.event)
+        }
     }
 }
 

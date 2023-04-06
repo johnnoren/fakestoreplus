@@ -111,6 +111,7 @@ export class CartService {
         const cart = this.cartRepository.getCart();
         cart.clearCart();
         this.cartRepository.saveCart(cart);
+        this.cartIconService.setBadgeCount(0);
     }
 
     getCartItemCount() {
